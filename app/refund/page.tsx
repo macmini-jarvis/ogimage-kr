@@ -14,42 +14,28 @@ export default function RefundPage() {
 
       <section className="space-y-6">
         <div>
-          <h2 className="text-base font-semibold text-white mb-2">1. 환불 대상</h2>
-          <p>OGMaker Pro 구독 서비스에 대한 환불 정책입니다. 무료 서비스는 별도의 결제가 없으므로 환불 대상이 아닙니다.</p>
+          <h2 className="text-base font-semibold text-white mb-2">환불 안내</h2>
+          <p>OGMaker Pro 구독 서비스를 구매하신 후 <strong>14일 이내</strong>에 환불을 요청하시면 사유에 관계없이 전액 환불해드립니다.</p>
         </div>
 
         <div>
-          <h2 className="text-base font-semibold text-white mb-2">2. 환불 조건</h2>
-          <ul className="list-disc pl-5 space-y-1">
-            <li><strong>결제 후 7일 이내:</strong> 전액 환불이 가능합니다.</li>
-            <li><strong>결제 후 7일 초과:</strong> 해당 결제 건에 대한 환불은 불가하며, 구독 해지 시 다음 결제일부터 과금이 중단됩니다.</li>
-            <li><strong>서비스 장애:</strong> 서비스 측 귀책사유로 72시간 이상 서비스 이용이 불가한 경우 해당 기간에 대해 비례 환불합니다.</li>
-          </ul>
+          <h2 className="text-base font-semibold text-white mb-2">환불 방법</h2>
+          <p>아래 이메일로 환불 요청을 보내주세요. 결제 시 사용한 이메일 주소를 함께 기재해 주시면 영업일 기준 3일 이내에 처리됩니다. 환불은 원래 결제 수단으로 진행됩니다.</p>
         </div>
 
         <div>
-          <h2 className="text-base font-semibold text-white mb-2">3. 구독 해지</h2>
-          <p>구독은 언제든지 해지할 수 있으며, 해지 후에도 현재 결제 기간이 끝날 때까지 Pro 기능을 사용할 수 있습니다. 결제는 Paddle을 통해 관리되며, Paddle 고객 포털에서 직접 해지할 수 있습니다.</p>
+          <h2 className="text-base font-semibold text-white mb-2">구독 해지</h2>
+          <p>구독은 언제든지 해지할 수 있으며, 해지 후에도 현재 결제 기간이 끝날 때까지 Pro 기능을 사용할 수 있습니다.</p>
         </div>
 
         <div>
-          <h2 className="text-base font-semibold text-white mb-2">4. 환불 절차</h2>
-          <ol className="list-decimal pl-5 space-y-1">
-            <li>아래 이메일로 환불 요청을 보내주세요.</li>
-            <li>결제 시 사용한 이메일 주소와 환불 사유를 함께 기재해 주세요.</li>
-            <li>요청 접수 후 영업일 기준 3일 이내에 처리됩니다.</li>
-            <li>환불은 원래 결제 수단으로 진행됩니다.</li>
-          </ol>
-        </div>
-
-        <div>
-          <h2 className="text-base font-semibold text-white mb-2">5. 연락처</h2>
-          <p>환불 관련 문의: openwebside@gmail.com</p>
+          <h2 className="text-base font-semibold text-white mb-2">연락처</h2>
+          <p>환불 문의: <a href="mailto:openwebside@gmail.com" className="text-emerald-400 underline">openwebside@gmail.com</a></p>
         </div>
       </section>
 
       <div className="mt-12 pt-6 border-t border-white/10 text-white/30 text-xs">
-        문의: openwebside@gmail.com
+        운영: soulmateai · 문의: openwebside@gmail.com
       </div>
     </main>
   );

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { OgPreview } from "@/components/og-preview";
 import { ControlPanel } from "@/components/control-panel";
 import { Header } from "@/components/header";
 import { ProModal } from "@/components/pro-modal";
+import PaddleProvider, { usePaddle } from "@/components/paddle-provider";
 
 export type ImageSize = "og" | "twitter" | "instagram" | "facebook";
 
@@ -54,11 +55,28 @@ const defaultConfig: OgConfig = {
 };
 
 export default function HomePage() {
+  return (
+    <HomeContent />
+  );
+}
+
+function HomeContent() {
   const [config, setConfig] = useState<OgConfig>(defaultConfig);
   const [isPro, setIsPro] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("ogmaker_pro") === "true") {
+      setIsPro(true);
+    }
+  }, []);
+
+  const handleSubscribed = useCallback(() => {
+    setIsPro(true);
+    setShowProModal(false);
+  }, []);
 
   const requirePro = useCallback(() => {
     setShowProModal(true);
@@ -103,78 +121,76 @@ export default function HomePage() {
   );
 
   return (
-    <div className="flex flex-col h-screen">
-      <Header isPro={isPro} onUpgrade={() => setShowProModal(true)} />
-      <div className="flex flex-1 overflow-hidden">
-        {/* 좌측: 컨트롤 패널 */}
-        <ControlPanel
-          config={config}
-          setConfig={setConfig}
-          isPro={isPro}
-          requirePro={requirePro}
-        />
+    <PaddleProvider onSubscribed={handleSubscribed}>
+      <div className="flex flex-col h-screen">
+        <Header isPro={isPro} onUpgrade={() => setShowProModal(true)} />
+        <div className="flex flex-1 overflow-hidden">
+          {/* 좌측: 컨트롤 패널 */}
+          <ControlPanel
+            config={config}
+            setConfig={setConfig}
+            isPro={isPro}
+            requirePro={requirePro}
+          />
 
-        {/* 우측: 미리보기 + 다운로드 */}
-        <main className="flex-1 flex flex-col items-center justify-center p-8 bg-[#111]">
-          <div className="w-full max-w-[720px]">
-            {/* 미리보기 */}
-            <div className="rounded-xl overflow-hidden border border-white/10 shadow-2xl">
-              <OgPreview ref={previewRef} config={config} isPro={isPro} />
+          {/* 우측: 미리보기 + 다운로드 */}
+          <main className="flex-1 flex flex-col items-center justify-center p-8 bg-[#111]">
+            <div className="w-full max-w-[720px]">
+              {/* 미리보기 */}
+              <div className="rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+                <OgPreview ref={previewRef} config={config} isPro={isPro} />
+              </div>
+
+              {/* 다운로드 버튼 */}
+              <div className="flex items-center gap-3 mt-6">
+                <button
+                  onClick={() => handleDownload("png")}
+                  disabled={downloading}
+                  className="flex-1 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors disabled:opacity-50"
+                >
+                  {downloading ? "생성 중..." : "PNG 다운로드"}
+                </button>
+                <button
+                  onClick={() => handleDownload("jpeg")}
+                  disabled={downloading}
+                  className="relative px-4 py-2.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium transition-colors disabled:opacity-50"
+                >
+                  JPEG
+                  {!isPro && (
+                    <span className="absolute -top-1.5 -right-1.5 px-1 py-0.5 text-[8px] font-bold bg-amber-500 text-black rounded">
+                      PRO
+                    </span>
+                  )}
+                </button>
+                <button
+                  onClick={() => handleDownload("webp")}
+                  disabled={downloading}
+                  className="relative px-4 py-2.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium transition-colors disabled:opacity-50"
+                >
+                  WebP
+                  {!isPro && (
+                    <span className="absolute -top-1.5 -right-1.5 px-1 py-0.5 text-[8px] font-bold bg-amber-500 text-black rounded">
+                      PRO
+                    </span>
+                  )}
+                </button>
+              </div>
+
+              <p className="text-xs text-white/30 text-center mt-3">
+                {IMAGE_SIZES[config.imageSize].label} · 회원가입 없음 ·{" "}
+                {isPro ? "워터마크 없음" : "무료 버전"} · 완전 무료
+              </p>
             </div>
+          </main>
+        </div>
 
-            {/* 다운로드 버튼 */}
-            <div className="flex items-center gap-3 mt-6">
-              <button
-                onClick={() => handleDownload("png")}
-                disabled={downloading}
-                className="flex-1 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors disabled:opacity-50"
-              >
-                {downloading ? "생성 중..." : "PNG 다운로드"}
-              </button>
-              <button
-                onClick={() => handleDownload("jpeg")}
-                disabled={downloading}
-                className="relative px-4 py-2.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium transition-colors disabled:opacity-50"
-              >
-                JPEG
-                {!isPro && (
-                  <span className="absolute -top-1.5 -right-1.5 px-1 py-0.5 text-[8px] font-bold bg-amber-500 text-black rounded">
-                    PRO
-                  </span>
-                )}
-              </button>
-              <button
-                onClick={() => handleDownload("webp")}
-                disabled={downloading}
-                className="relative px-4 py-2.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium transition-colors disabled:opacity-50"
-              >
-                WebP
-                {!isPro && (
-                  <span className="absolute -top-1.5 -right-1.5 px-1 py-0.5 text-[8px] font-bold bg-amber-500 text-black rounded">
-                    PRO
-                  </span>
-                )}
-              </button>
-            </div>
-
-            <p className="text-xs text-white/30 text-center mt-3">
-              {IMAGE_SIZES[config.imageSize].label} · 회원가입 없음 ·{" "}
-              {isPro ? "워터마크 없음" : "무료 버전"} · 완전 무료
-            </p>
-          </div>
-        </main>
+        {/* Pro 업그레이드 모달 */}
+        {showProModal && (
+          <ProModal
+            onClose={() => setShowProModal(false)}
+          />
+        )}
       </div>
-
-      {/* Pro 업그레이드 모달 */}
-      {showProModal && (
-        <ProModal
-          onClose={() => setShowProModal(false)}
-          onActivate={() => {
-            setIsPro(true);
-            setShowProModal(false);
-          }}
-        />
-      )}
-    </div>
+    </PaddleProvider>
   );
 }

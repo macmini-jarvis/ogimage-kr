@@ -1,8 +1,9 @@
 "use client";
 
+import { usePaddle } from "@/components/paddle-provider";
+
 interface ProModalProps {
   onClose: () => void;
-  onActivate: () => void;
 }
 
 const PRO_FEATURES = [
@@ -15,7 +16,13 @@ const PRO_FEATURES = [
   "그라디언트 프리셋 전체 해금",
 ];
 
-export function ProModal({ onClose, onActivate }: ProModalProps) {
+export function ProModal({ onClose }: ProModalProps) {
+  const { openCheckout } = usePaddle();
+
+  const handlePurchase = () => {
+    openCheckout();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
@@ -59,7 +66,7 @@ export function ProModal({ onClose, onActivate }: ProModalProps) {
 
         {/* 버튼 */}
         <button
-          onClick={onActivate}
+          onClick={handlePurchase}
           className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold text-sm hover:opacity-90 transition-opacity"
         >
           Pro 시작하기

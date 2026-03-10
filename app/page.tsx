@@ -6,7 +6,7 @@ import { OgPreview } from "@/components/og-preview";
 import { ControlPanel } from "@/components/control-panel";
 import { Header } from "@/components/header";
 import { ProModal } from "@/components/pro-modal";
-import PaddleProvider, { usePaddle } from "@/components/paddle-provider";
+import PaddleProvider, { usePaddle, isProStored } from "@/components/paddle-provider";
 
 export type ImageSize = "og" | "twitter" | "instagram" | "facebook";
 
@@ -69,7 +69,7 @@ function HomeContent() {
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("ogmaker_pro") === "true") {
+    if (isProStored()) {
       setIsPro(true);
     }
   }, []);

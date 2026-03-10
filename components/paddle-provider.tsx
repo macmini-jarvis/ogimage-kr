@@ -3,6 +3,20 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { initializePaddle, Paddle } from "@paddle/paddle-js";
 
+const PRO_STORAGE_KEY = "ogmaker_pro";
+const PRO_TX_KEY = "ogmaker_pro_tx";
+
+// Pro 상태 검증: transaction ID가 있어야 유효
+export function isProStored(): boolean {
+  try {
+    const pro = localStorage.getItem(PRO_STORAGE_KEY);
+    const tx = localStorage.getItem(PRO_TX_KEY);
+    return pro === "true" && !!tx && tx.startsWith("txn_");
+  } catch {
+    return false;
+  }
+}
+
 interface PaddleContextType {
   paddle: Paddle | null;
   openCheckout: () => void;
@@ -38,8 +52,11 @@ export default function PaddleProvider({
           : "sandbox",
       eventCallback(event) {
         if (event.name === "checkout.completed") {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const txId = (event.data as any)?.transaction_id ?? `txn_${Date.now()}`;
+          localStorage.setItem(PRO_STORAGE_KEY, "true");
+          localStorage.setItem(PRO_TX_KEY, txId);
           onSubscribed();
-          localStorage.setItem("ogmaker_pro", "true");
         }
       },
     }).then((p) => {

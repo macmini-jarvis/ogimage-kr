@@ -104,12 +104,28 @@ export function ControlPanel({
   const update = (partial: Partial<OgConfig>) =>
     setConfig((prev) => ({ ...prev, ...partial }));
 
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
   const handleFileUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     key: "logoUrl" | "imageUrl"
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      alert("JPG, PNG, WebP, GIF 이미지만 업로드 가능합니다.");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      alert("파일 크기는 5MB 이하만 가능합니다.");
+      e.target.value = "";
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => update({ [key]: reader.result as string });
     reader.readAsDataURL(file);
@@ -253,7 +269,7 @@ export function ControlPanel({
             <input
               ref={logoInputRef}
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp,image/gif"
               className="hidden"
               onChange={(e) => handleFileUpload(e, "logoUrl")}
             />
@@ -266,7 +282,7 @@ export function ControlPanel({
             <input
               ref={imageInputRef}
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp,image/gif"
               className="hidden"
               onChange={(e) => handleFileUpload(e, "imageUrl")}
             />

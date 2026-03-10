@@ -1,65 +1,180 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useRef, useCallback } from "react";
+import { OgPreview } from "@/components/og-preview";
+import { ControlPanel } from "@/components/control-panel";
+import { Header } from "@/components/header";
+import { ProModal } from "@/components/pro-modal";
+
+export type ImageSize = "og" | "twitter" | "instagram" | "facebook";
+
+export const IMAGE_SIZES: Record<ImageSize, { w: number; h: number; label: string }> = {
+  og: { w: 1200, h: 630, label: "OG (1200×630)" },
+  twitter: { w: 1200, h: 675, label: "Twitter (1200×675)" },
+  instagram: { w: 1080, h: 1080, label: "Instagram (1080×1080)" },
+  facebook: { w: 1200, h: 628, label: "Facebook (1200×628)" },
+};
+
+export interface OgConfig {
+  title: string;
+  tag: string;
+  author: string;
+  template: string;
+  bgType: "gradient" | "solid";
+  bgGradient: string;
+  bgSolid: string;
+  bgCustomGradient: { from: string; to: string } | null;
+  gradientDirection: string;
+  noise: number;
+  gridOverlay: boolean;
+  logoUrl: string | null;
+  imageUrl: string | null;
+  fontSize: number;
+  fontFamily: string;
+  imageSize: ImageSize;
+}
+
+const defaultConfig: OgConfig = {
+  title: "나만의 OG 이미지를 만들어보세요",
+  tag: "OG Image",
+  author: "",
+  template: "modern",
+  bgType: "gradient",
+  bgGradient: "from-emerald-600 to-cyan-600",
+  bgSolid: "#10b981",
+  bgCustomGradient: null,
+  gradientDirection: "to-br",
+  noise: 0,
+  gridOverlay: false,
+  logoUrl: null,
+  imageUrl: null,
+  fontSize: 40,
+  fontFamily: "default",
+  imageSize: "og",
+};
+
+export default function HomePage() {
+  const [config, setConfig] = useState<OgConfig>(defaultConfig);
+  const [isPro, setIsPro] = useState(false);
+  const [showProModal, setShowProModal] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [downloading, setDownloading] = useState(false);
+
+  const requirePro = useCallback(() => {
+    setShowProModal(true);
+  }, []);
+
+  const handleDownload = useCallback(
+    async (format: "png" | "jpeg" | "webp") => {
+      if (!isPro && format !== "png") {
+        setShowProModal(true);
+        return;
+      }
+      if (!previewRef.current) return;
+      setDownloading(true);
+
+      const size = IMAGE_SIZES[config.imageSize];
+
+      try {
+        const { toBlob } = await import("html-to-image");
+        const blob = await toBlob(previewRef.current, {
+          width: size.w,
+          height: size.h,
+          pixelRatio: 2,
+          type: `image/${format}`,
+          quality: format === "jpeg" ? 0.95 : undefined,
+        });
+
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `og-image.${format}`;
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+      } catch (err) {
+        console.error("Download failed:", err);
+      } finally {
+        setDownloading(false);
+      }
+    },
+    [isPro, config.imageSize]
+  );
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="flex flex-col h-screen">
+      <Header isPro={isPro} onUpgrade={() => setShowProModal(true)} />
+      <div className="flex flex-1 overflow-hidden">
+        {/* 좌측: 컨트롤 패널 */}
+        <ControlPanel
+          config={config}
+          setConfig={setConfig}
+          isPro={isPro}
+          requirePro={requirePro}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+        {/* 우측: 미리보기 + 다운로드 */}
+        <main className="flex-1 flex flex-col items-center justify-center p-8 bg-[#111]">
+          <div className="w-full max-w-[720px]">
+            {/* 미리보기 */}
+            <div className="rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+              <OgPreview ref={previewRef} config={config} isPro={isPro} />
+            </div>
+
+            {/* 다운로드 버튼 */}
+            <div className="flex items-center gap-3 mt-6">
+              <button
+                onClick={() => handleDownload("png")}
+                disabled={downloading}
+                className="flex-1 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors disabled:opacity-50"
+              >
+                {downloading ? "생성 중..." : "PNG 다운로드"}
+              </button>
+              <button
+                onClick={() => handleDownload("jpeg")}
+                disabled={downloading}
+                className="relative px-4 py-2.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium transition-colors disabled:opacity-50"
+              >
+                JPEG
+                {!isPro && (
+                  <span className="absolute -top-1.5 -right-1.5 px-1 py-0.5 text-[8px] font-bold bg-amber-500 text-black rounded">
+                    PRO
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => handleDownload("webp")}
+                disabled={downloading}
+                className="relative px-4 py-2.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium transition-colors disabled:opacity-50"
+              >
+                WebP
+                {!isPro && (
+                  <span className="absolute -top-1.5 -right-1.5 px-1 py-0.5 text-[8px] font-bold bg-amber-500 text-black rounded">
+                    PRO
+                  </span>
+                )}
+              </button>
+            </div>
+
+            <p className="text-xs text-white/30 text-center mt-3">
+              {IMAGE_SIZES[config.imageSize].label} · 회원가입 없음 ·{" "}
+              {isPro ? "워터마크 없음" : "무료 버전"} · 완전 무료
+            </p>
+          </div>
+        </main>
+      </div>
+
+      {/* Pro 업그레이드 모달 */}
+      {showProModal && (
+        <ProModal
+          onClose={() => setShowProModal(false)}
+          onActivate={() => {
+            setIsPro(true);
+            setShowProModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }

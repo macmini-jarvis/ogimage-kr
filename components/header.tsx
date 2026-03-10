@@ -11,7 +11,7 @@ export function Header({ isPro, onUpgrade }: HeaderProps) {
           <span className="text-[10px] font-bold text-black">OG</span>
         </div>
         <span className="text-sm font-semibold tracking-tight">
-          OG 이미지 메이커
+          OGMaker
         </span>
         {isPro && (
           <span className="px-1.5 py-0.5 text-[9px] font-bold bg-amber-500 text-black rounded">

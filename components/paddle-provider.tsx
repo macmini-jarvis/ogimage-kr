@@ -32,9 +32,14 @@ async function verifyTransaction(transactionId: string): Promise<boolean> {
   }
 }
 
+interface CheckoutParams {
+  email?: string;
+  userId?: string;
+}
+
 interface PaddleContextType {
   paddle: Paddle | null;
-  openCheckout: () => void;
+  openCheckout: (params?: CheckoutParams) => void;
 }
 
 const PaddleContext = createContext<PaddleContextType>({
@@ -70,7 +75,6 @@ export default function PaddleProvider({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const txId = (event.data as any)?.transaction_id;
           if (txId) {
-            // 서버에서 Paddle API로 트랜잭션 검증 후 서명된 쿠키 발급
             verifyTransaction(txId).then((verified) => {
               if (verified) {
                 onSubscribed();
@@ -84,22 +88,27 @@ export default function PaddleProvider({
     });
   }, [onSubscribed]);
 
-  const openCheckout = useCallback(() => {
-    const priceId = process.env.NEXT_PUBLIC_PADDLE_PRICE_PRO;
-    if (!paddle || !priceId) {
-      console.warn("Paddle 미초기화 또는 가격 ID 없음");
-      return;
-    }
+  const openCheckout = useCallback(
+    (params?: CheckoutParams) => {
+      const priceId = process.env.NEXT_PUBLIC_PADDLE_PRICE_PRO;
+      if (!paddle || !priceId) {
+        console.warn("Paddle 미초기화 또는 가격 ID 없음");
+        return;
+      }
 
-    paddle.Checkout.open({
-      items: [{ priceId, quantity: 1 }],
-      settings: {
-        displayMode: "overlay",
-        theme: "dark",
-        locale: "ko",
-      },
-    });
-  }, [paddle]);
+      paddle.Checkout.open({
+        items: [{ priceId, quantity: 1 }],
+        customer: params?.email ? { email: params.email } : undefined,
+        customData: params?.userId ? { userId: params.userId } : undefined,
+        settings: {
+          displayMode: "overlay",
+          theme: "dark",
+          locale: "ko",
+        },
+      });
+    },
+    [paddle]
+  );
 
   return (
     <PaddleContext.Provider value={{ paddle, openCheckout }}>

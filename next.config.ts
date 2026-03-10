@@ -33,7 +33,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' https://fonts.gstatic.com",
-      "connect-src 'self' https://*.paddle.com https://www.google-analytics.com",
+      "connect-src 'self' https://*.paddle.com https://*.supabase.co https://www.google-analytics.com",
       "frame-src 'self' https://*.paddle.com",
       "frame-ancestors 'self'",
       "base-uri 'self'",

@@ -1,9 +1,13 @@
+import { AuthButton } from "@/components/auth-button";
+import type { User } from "@supabase/supabase-js";
+
 interface HeaderProps {
   isPro: boolean;
   onUpgrade: () => void;
+  user: User | null;
 }
 
-export function Header({ isPro, onUpgrade }: HeaderProps) {
+export function Header({ isPro, onUpgrade, user }: HeaderProps) {
   return (
     <header className="flex items-center justify-between h-12 px-5 border-b border-white/5 bg-[#0a0a0a] shrink-0">
       <div className="flex items-center gap-2">
@@ -28,6 +32,7 @@ export function Header({ isPro, onUpgrade }: HeaderProps) {
             Pro 업그레이드
           </button>
         )}
+        <AuthButton user={user} />
         <a
           href="https://openwebside.com"
           target="_blank"

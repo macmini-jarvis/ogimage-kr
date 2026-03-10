@@ -7,6 +7,8 @@ import { ControlPanel } from "@/components/control-panel";
 import { Header } from "@/components/header";
 import { ProModal } from "@/components/pro-modal";
 import PaddleProvider, { checkProStatus } from "@/components/paddle-provider";
+import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 export type ImageSize = "og" | "twitter" | "instagram" | "facebook";
 
@@ -65,10 +67,35 @@ function HomeContent() {
   const [config, setConfig] = useState<OgConfig>(defaultConfig);
   const [isPro, setIsPro] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
+    const supabase = createClient();
+
+    if (supabase) {
+      // 세션 확인
+      supabase.auth.getUser().then(({ data: { user: u } }) => {
+        setUser(u);
+      });
+
+      // Auth 상태 변경 리스너
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null);
+      });
+
+      // Pro 상태 확인
+      checkProStatus().then((pro) => {
+        if (pro) setIsPro(true);
+      });
+
+      return () => subscription.unsubscribe();
+    }
+
+    // Supabase 미설정 시 Pro 상태만 확인
     checkProStatus().then((pro) => {
       if (pro) setIsPro(true);
     });
@@ -124,7 +151,7 @@ function HomeContent() {
   return (
     <PaddleProvider onSubscribed={handleSubscribed}>
       <div className="flex flex-col h-screen">
-        <Header isPro={isPro} onUpgrade={() => setShowProModal(true)} />
+        <Header isPro={isPro} onUpgrade={() => setShowProModal(true)} user={user} />
         <div className="flex flex-1 overflow-hidden">
           {/* 좌측: 컨트롤 패널 */}
           <ControlPanel
@@ -206,6 +233,7 @@ function HomeContent() {
         {showProModal && (
           <ProModal
             onClose={() => setShowProModal(false)}
+            user={user}
           />
         )}
       </div>

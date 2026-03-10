@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "crypto";
+import { createClient } from "@/lib/supabase/server";
 
 const PADDLE_API_KEY = process.env.PADDLE_API_KEY;
 const PRO_SIGN_SECRET = process.env.PRO_SIGN_SECRET;
@@ -57,7 +58,8 @@ export async function POST(req: NextRequest) {
     }
 
     const paddleData = await paddleRes.json();
-    const status = paddleData.data?.status;
+    const txnData = paddleData.data;
+    const status = txnData?.status;
 
     if (status !== "completed" && status !== "paid") {
       return NextResponse.json(
@@ -66,7 +68,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 서명된 토큰 생성
+    // Supabase에 구독 저장 (로그인된 유저인 경우)
+    const supabase = await createClient();
+    if (supabase && txnData?.subscription_id) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        await supabase.from("subscriptions").upsert(
+          {
+            user_id: user.id,
+            paddle_subscription_id: txnData.subscription_id,
+            paddle_customer_id: txnData.customer_id ?? null,
+            status: "active",
+            price_id: txnData.items?.[0]?.price?.id ?? null,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "paddle_subscription_id" }
+        );
+      }
+    }
+
+    // 서명된 토큰 쿠키 발급 (즉시 Pro 접근용)
     const timestamp = Math.floor(Date.now() / 1000);
     const token = signToken(transactionId, timestamp);
 
@@ -75,7 +99,7 @@ export async function POST(req: NextRequest) {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
-      maxAge: 60 * 60 * 24 * 400, // 400일
+      maxAge: 60 * 60 * 24 * 400,
       path: "/",
     });
 

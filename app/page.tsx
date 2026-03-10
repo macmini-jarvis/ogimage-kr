@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import Link from "next/link";
 import { OgPreview } from "@/components/og-preview";
 import { ControlPanel } from "@/components/control-panel";
 import { Header } from "@/components/header";
@@ -180,6 +181,14 @@ function HomeContent() {
                 {IMAGE_SIZES[config.imageSize].label} · 회원가입 없음 ·{" "}
                 {isPro ? "워터마크 없음" : "무료 버전"} · 완전 무료
               </p>
+
+              <div className="flex items-center justify-center gap-4 mt-8 text-[10px] text-white/20">
+                <Link href="/terms" className="hover:text-white/40 transition-colors">이용약관</Link>
+                <span>·</span>
+                <Link href="/privacy" className="hover:text-white/40 transition-colors">개인정보처리방침</Link>
+                <span>·</span>
+                <Link href="/refund" className="hover:text-white/40 transition-colors">환불정책</Link>
+              </div>
             </div>
           </main>
         </div>

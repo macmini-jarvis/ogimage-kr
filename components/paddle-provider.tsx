@@ -3,15 +3,30 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { initializePaddle, Paddle } from "@paddle/paddle-js";
 
-const PRO_STORAGE_KEY = "ogmaker_pro";
-const PRO_TX_KEY = "ogmaker_pro_tx";
-
-// Pro 상태 검증: transaction ID가 있어야 유효
-export function isProStored(): boolean {
+// 서버에서 Pro 상태 확인
+export async function checkProStatus(): Promise<boolean> {
   try {
-    const pro = localStorage.getItem(PRO_STORAGE_KEY);
-    const tx = localStorage.getItem(PRO_TX_KEY);
-    return pro === "true" && !!tx && tx.startsWith("txn_");
+    const res = await fetch("/api/check-pro", { credentials: "same-origin" });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return data.isPro === true;
+  } catch {
+    return false;
+  }
+}
+
+// 서버에 트랜잭션 검증 요청
+async function verifyTransaction(transactionId: string): Promise<boolean> {
+  try {
+    const res = await fetch("/api/verify-pro", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ transactionId }),
+      credentials: "same-origin",
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return data.success === true;
   } catch {
     return false;
   }
@@ -53,10 +68,15 @@ export default function PaddleProvider({
       eventCallback(event) {
         if (event.name === "checkout.completed") {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const txId = (event.data as any)?.transaction_id ?? `txn_${Date.now()}`;
-          localStorage.setItem(PRO_STORAGE_KEY, "true");
-          localStorage.setItem(PRO_TX_KEY, txId);
-          onSubscribed();
+          const txId = (event.data as any)?.transaction_id;
+          if (txId) {
+            // 서버에서 Paddle API로 트랜잭션 검증 후 서명된 쿠키 발급
+            verifyTransaction(txId).then((verified) => {
+              if (verified) {
+                onSubscribed();
+              }
+            });
+          }
         }
       },
     }).then((p) => {

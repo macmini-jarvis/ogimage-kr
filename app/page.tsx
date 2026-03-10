@@ -6,7 +6,7 @@ import { OgPreview } from "@/components/og-preview";
 import { ControlPanel } from "@/components/control-panel";
 import { Header } from "@/components/header";
 import { ProModal } from "@/components/pro-modal";
-import PaddleProvider, { usePaddle, isProStored } from "@/components/paddle-provider";
+import PaddleProvider, { checkProStatus } from "@/components/paddle-provider";
 
 export type ImageSize = "og" | "twitter" | "instagram" | "facebook";
 
@@ -69,9 +69,9 @@ function HomeContent() {
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
-    if (isProStored()) {
-      setIsPro(true);
-    }
+    checkProStatus().then((pro) => {
+      if (pro) setIsPro(true);
+    });
   }, []);
 
   const handleSubscribed = useCallback(() => {

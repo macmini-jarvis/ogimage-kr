@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "OGMaker — 무료 OG 이미지 생성기",
     description: "블로그·SNS용 OG 이미지를 3초 만에 만드세요. 회원가입 없이 바로 다운로드.",
-    url: "https://ogimage-kr.vercel.app",
+    url: "https://ogmaker.co.kr",
     siteName: "OGMaker",
     locale: "ko_KR",
     type: "website",

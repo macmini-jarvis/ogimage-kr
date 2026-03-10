@@ -284,7 +284,7 @@ export const OgPreview = forwardRef<HTMLDivElement, OgPreviewProps>(
         {!isPro && (
           <div className="absolute bottom-3 right-4 z-20">
             <span className="text-[10px] text-white/30 font-medium">
-              ogimage.kr
+              ogmaker.co.kr
             </span>
           </div>
         )}

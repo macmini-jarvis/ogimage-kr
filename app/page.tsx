@@ -182,12 +182,21 @@ function HomeContent() {
                 {isPro ? "워터마크 없음" : "무료 버전"} · 완전 무료
               </p>
 
-              <div className="flex items-center justify-center gap-4 mt-8 text-[10px] text-white/20">
-                <Link href="/terms" className="hover:text-white/40 transition-colors">이용약관</Link>
-                <span>·</span>
-                <Link href="/privacy" className="hover:text-white/40 transition-colors">개인정보처리방침</Link>
-                <span>·</span>
-                <Link href="/refund" className="hover:text-white/40 transition-colors">환불정책</Link>
+              <div className="mt-10 pt-6 border-t border-white/5 text-center">
+                <p className="text-[11px] text-white/30 leading-relaxed max-w-md mx-auto">
+                  OGMaker는 블로그, SNS 공유용 오픈그래프(OG) 이미지를 생성하는 온라인 도구입니다.
+                  무료로 PNG 이미지를 만들고, Pro 구독으로 프리미엄 템플릿, 커스텀 폰트, 다양한 포맷과 사이즈를 이용하세요.
+                </p>
+                <p className="text-[10px] text-white/20 mt-3">
+                  문의: <a href="mailto:openwebside@gmail.com" className="hover:text-white/40 transition-colors underline">openwebside@gmail.com</a>
+                </p>
+                <div className="flex items-center justify-center gap-4 mt-3 text-[10px] text-white/20">
+                  <Link href="/terms" className="hover:text-white/40 transition-colors">이용약관</Link>
+                  <span>·</span>
+                  <Link href="/privacy" className="hover:text-white/40 transition-colors">개인정보처리방침</Link>
+                  <span>·</span>
+                  <Link href="/refund" className="hover:text-white/40 transition-colors">환불정책</Link>
+                </div>
               </div>
             </div>
           </main>

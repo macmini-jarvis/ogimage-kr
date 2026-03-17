@@ -2,7 +2,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "가격 - OGMaker",
+  title: "가격 - 무료 vs Pro 비교",
+  description:
+    "OGMaker 요금제를 비교하세요. 무료로 기본 OG 이미지 생성, Pro로 프리미엄 템플릿, 워터마크 제거, 다양한 사이즈를 이용하세요.",
+  alternates: {
+    canonical: "https://ogmaker.co.kr/pricing",
+  },
+  openGraph: {
+    title: "OGMaker 가격 - 무료 vs Pro 비교",
+    description:
+      "무료로 기본 OG 이미지 생성, Pro로 프리미엄 템플릿과 워터마크 제거까지.",
+    url: "https://ogmaker.co.kr/pricing",
+  },
 };
 
 const FREE_FEATURES = [

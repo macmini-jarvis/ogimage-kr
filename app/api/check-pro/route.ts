@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 
 const PRO_SIGN_SECRET = process.env.PRO_SIGN_SECRET;
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
       .update(payload)
       .digest("hex");
 
-    if (signature !== expectedSig) {
+    if (!timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSig))) {
       return NextResponse.json({ isPro: false });
     }
 

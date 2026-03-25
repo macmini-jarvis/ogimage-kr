@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const PADDLE_WEBHOOK_SECRET = process.env.PADDLE_WEBHOOK_SECRET;
@@ -25,7 +25,7 @@ function verifyWebhookSignature(
     .update(payload)
     .digest("hex");
 
-  return computed === h1;
+  return timingSafeEqual(Buffer.from(computed), Buffer.from(h1));
 }
 
 export async function POST(req: NextRequest) {

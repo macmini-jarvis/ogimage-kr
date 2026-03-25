@@ -137,7 +137,7 @@ export function ControlPanel({
   ];
 
   return (
-    <aside className="w-80 shrink-0 border-r border-white/5 bg-[#0d0d0d] overflow-y-auto">
+    <aside className="w-full lg:w-80 shrink-0 border-r border-white/5 bg-[#0d0d0d] overflow-y-auto">
       <div className="p-5 space-y-6">
         {/* 템플릿 선택 */}
         <section>

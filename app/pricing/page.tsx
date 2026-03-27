@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PageLayout } from "@/components/layout/page-layout";
+import { Check } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "가격 - 무료 vs Pro 비교",
@@ -38,17 +40,15 @@ const PRO_FEATURES = [
 
 export default function PricingPage() {
   return (
-    <main className="max-w-3xl mx-auto px-6 py-16">
-      <Link href="/" className="text-emerald-400 text-xs hover:underline">&larr; OGMaker로 돌아가기</Link>
-
-      <div className="text-center mt-8 mb-12">
-        <h1 className="text-3xl font-bold text-white">가격</h1>
-        <p className="text-white/50 text-sm mt-2">필요에 맞는 플랜을 선택하세요</p>
+    <PageLayout>
+      <div className="text-center mb-12">
+        <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">가격</h1>
+        <p className="text-white/50 text-sm mt-3">필요에 맞는 플랜을 선택하세요</p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
         {/* 무료 */}
-        <div className="rounded-2xl border border-white/10 bg-[#151515] p-8">
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-7">
           <h2 className="text-lg font-bold text-white">무료</h2>
           <div className="flex items-baseline gap-1 mt-3">
             <span className="text-3xl font-bold text-white">₩0</span>
@@ -57,27 +57,27 @@ export default function PricingPage() {
           <p className="text-white/40 text-xs mt-2">회원가입 없이 바로 사용</p>
 
           <Link
-            href="/"
-            className="block w-full text-center py-2.5 mt-6 rounded-xl bg-white/10 hover:bg-white/15 text-white text-sm font-medium transition-colors"
+            href="/editor"
+            className="block w-full text-center py-2.5 mt-6 rounded-xl border border-white/10 hover:border-white/20 text-white text-sm font-medium transition-colors"
           >
             무료로 시작
           </Link>
 
-          <ul className="mt-8 space-y-3">
+          <ul className="mt-6 space-y-3">
             {FREE_FEATURES.map((f) => (
-              <li key={f} className="flex items-center gap-2.5 text-sm">
-                <span className="w-4 h-4 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                  <span className="text-white/50 text-[10px]">&#10003;</span>
-                </span>
-                <span className="text-white/60">{f}</span>
+              <li key={f} className="flex items-start gap-2.5 text-sm">
+                <div className="mt-0.5 w-4 h-4 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                  <Check size={10} className="text-white/50" />
+                </div>
+                <span className="text-white/50 text-xs">{f}</span>
               </li>
             ))}
           </ul>
         </div>
 
         {/* Pro */}
-        <div className="rounded-2xl border border-amber-500/30 bg-[#151515] p-8 relative">
-          <span className="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-amber-500 text-black text-[10px] font-bold">
+        <div className="relative rounded-2xl border border-amber-500/30 bg-amber-500/[0.03] p-7 shadow-lg shadow-amber-500/5">
+          <span className="absolute -top-3 left-6 px-3 py-1 rounded-full bg-amber-500 text-black text-xs font-bold">
             추천
           </span>
           <h2 className="text-lg font-bold text-white">Pro</h2>
@@ -88,19 +88,19 @@ export default function PricingPage() {
           <p className="text-white/40 text-xs mt-2">연간 결제 시 ₩29,000/년 (38% 할인)</p>
 
           <Link
-            href="/"
-            className="block w-full text-center py-2.5 mt-6 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-black text-sm font-semibold hover:opacity-90 transition-opacity"
+            href="/editor"
+            className="block w-full text-center py-2.5 mt-6 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-black text-sm font-semibold hover:shadow-lg hover:shadow-amber-500/20 transition-all"
           >
             Pro 시작하기
           </Link>
 
-          <ul className="mt-8 space-y-3">
+          <ul className="mt-6 space-y-3">
             {PRO_FEATURES.map((f) => (
-              <li key={f} className="flex items-center gap-2.5 text-sm">
-                <span className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
-                  <span className="text-emerald-400 text-[10px]">&#10003;</span>
-                </span>
-                <span className="text-white/80">{f}</span>
+              <li key={f} className="flex items-start gap-2.5 text-sm">
+                <div className="mt-0.5 w-4 h-4 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
+                  <Check size={10} className="text-emerald-400" />
+                </div>
+                <span className="text-white/50 text-xs">{f}</span>
               </li>
             ))}
           </ul>
@@ -110,18 +110,7 @@ export default function PricingPage() {
       <div className="text-center mt-12 text-white/30 text-xs space-y-1">
         <p>결제는 Paddle을 통해 안전하게 처리됩니다.</p>
         <p>구매 후 14일 이내 무조건 전액 환불 보장.</p>
-        <div className="flex items-center justify-center gap-4 mt-4">
-          <Link href="/terms" className="hover:text-white/50 transition-colors">이용약관</Link>
-          <span>·</span>
-          <Link href="/privacy" className="hover:text-white/50 transition-colors">개인정보처리방침</Link>
-          <span>·</span>
-          <Link href="/refund" className="hover:text-white/50 transition-colors">환불정책</Link>
-        </div>
       </div>
-
-      <div className="mt-8 pt-6 border-t border-white/5 text-center text-white/20 text-[10px]">
-        운영: soulmateai · 문의: <a href="mailto:openwebside@gmail.com" className="underline">openwebside@gmail.com</a>
-      </div>
-    </main>
+    </PageLayout>
   );
 }

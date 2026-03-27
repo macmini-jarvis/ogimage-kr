@@ -1,7 +1,7 @@
 "use client";
 
-import type { OgConfig, ImageSize } from "@/app/page";
-import { IMAGE_SIZES } from "@/app/page";
+import type { OgConfig, ImageSize } from "@/lib/types";
+import { IMAGE_SIZES } from "@/lib/constants";
 import { useRef } from "react";
 
 interface ControlPanelProps {

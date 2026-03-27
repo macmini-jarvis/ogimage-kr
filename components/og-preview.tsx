@@ -1,8 +1,8 @@
 "use client";
 
 import { forwardRef } from "react";
-import type { OgConfig } from "@/app/page";
-import { IMAGE_SIZES } from "@/app/page";
+import type { OgConfig } from "@/lib/types";
+import { IMAGE_SIZES } from "@/lib/constants";
 
 interface OgPreviewProps {
   config: OgConfig;
